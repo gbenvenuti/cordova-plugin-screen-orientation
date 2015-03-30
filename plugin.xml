@@ -5,8 +5,16 @@
     version="1.0.0">
 
     <name>Screen Orientation</name>
+
     <description>Adds Screen Orientation API lock and unlock functions to the global screen object in android, iOS and BB10.</description>
+
     <license>MIT</license>
+
+    <keywords>Screen orientation, orientation, landscape, portrait, wkwebview</keywords>
+
+    <repo>https://github.com/EddyVerbruggen/cordova-plugin-screenorientation-for-wkwebview.git</repo>
+
+    <issue>https://github.com/EddyVerbruggen/cordova-plugin-screenorientation-for-wkwebview/issues</issue>
 
     <engines>
         <engine name="cordova" version=">=3.0.0" />
