@@ -48,6 +48,7 @@ public class YoikScreenOrientation extends CordovaPlugin {
     private static final String LANDSCAPE_SECONDARY = "landscape-secondary";
     private static final String PORTRAIT = "portrait";
     private static final String LANDSCAPE = "landscape";
+    private static final String NOSENSOR = "nosensor";
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -82,6 +83,8 @@ public class YoikScreenOrientation extends CordovaPlugin {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             } else if (orientation.equals(PORTRAIT_PRIMARY)) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else if (orientation.equals(NOSENSOR)) {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
             } else if (orientation.equals(LANDSCAPE)) {
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
             } else if (orientation.equals(PORTRAIT)) {

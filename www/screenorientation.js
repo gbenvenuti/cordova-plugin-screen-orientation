@@ -33,8 +33,10 @@ var screenOrientation = {},
         // The orientation is in the secondary landscape mode.
         'portrait',
         // The orientation is either portrait-primary or portrait-secondary.
-        'landscape'
+        'landscape',
         // The orientation is either landscape-primary or landscape-secondary.
+        'nosensor'
+        //disable the sensor to view as default
     ];
 
 screenOrientation.Orientations = Orientations;
