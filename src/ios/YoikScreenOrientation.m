@@ -23,7 +23,89 @@ SOFTWARE.
  */
 #import "YoikScreenOrientation.h"
 
+static char * const kOrientationLockKey = "orientationLock";
+static char * const kOrienatationKey = "orientation";
+
 @implementation YoikScreenOrientation
+
++ (void)load
+{
+    [super load];
+    [self changeImplementationForClass:NSClassFromString(@"CDVViewController") selector:@selector(shouldAutorotate) to:@selector(yoki_shouldAutorotate)];
+    [self changeImplementationForClass:NSClassFromString(@"CDVViewController") selector:@selector(supportedInterfaceOrientations) to:@selector(yoki_supportedInterfaceOrientations)];
+}
+
+#pragma mark - Utils
+
++ (void)changeImplementationForClass:(Class)srcClass selector:(SEL)srcSelector to:(SEL)toSelector
+{
+    Method original = class_getInstanceMethod(srcClass, srcSelector);
+    Method yoki = class_getInstanceMethod(self.class, toSelector);
+    
+    method_exchangeImplementations(original, yoki);
+}
+
+- (UIInterfaceOrientation)interfaceOrientationForArguments:(NSArray *)arguments
+{
+    if (arguments.count < 2)
+        return UIInterfaceOrientationUnknown;
+    if (![arguments[0] isEqualToString:@"set"])
+        return UIInterfaceOrientationUnknown;
+    if ([arguments[1] isEqualToString:@"unlocked"] || [arguments[1] isEqualToString:@"locked"])
+        return UIInterfaceOrientationUnknown;
+    
+    if ([arguments[1] isEqualToString:@"portait"] || [arguments[1] isEqualToString:@"portrait-primary"]) {
+        return UIInterfaceOrientationPortrait;
+    }
+    else if ([arguments[1] isEqualToString:@"portrait-secondary"]) {
+        return UIInterfaceOrientationPortraitUpsideDown;
+    }
+    else if ([arguments[1] isEqualToString:@"landscape-secondary"]) {
+        return UIInterfaceOrientationLandscapeRight;
+    }
+    else if ([arguments[1] isEqualToString:@"landscape-primary"] || [arguments[1] isEqualToString:@"landscape"]) {
+        return UIInterfaceOrientationLandscapeLeft;
+    }
+    else {
+        return UIInterfaceOrientationUnknown;
+    }
+}
+
+- (void)setIsScreenUnlocked:(BOOL)isScreenUnlocked
+{
+    objc_setAssociatedObject([UIApplication sharedApplication], kOrientationLockKey, @(isScreenUnlocked), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)setSupportedInterfaceOrientations:(NSInteger)supportedInterfaceOrientations
+{
+    supportedInterfaceOrientations = supportedInterfaceOrientations == UIInterfaceOrientationUnknown ? UIInterfaceOrientationMaskAll : supportedInterfaceOrientations;
+    objc_setAssociatedObject([UIApplication sharedApplication], kOrienatationKey, @(supportedInterfaceOrientations), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+#pragma mark - Swizzle methods
+
+- (BOOL)yoki_shouldAutorotate
+{
+    NSNumber *value = objc_getAssociatedObject([UIApplication sharedApplication], kOrientationLockKey);
+    if (!value)
+        return YES;
+    else
+        return value.boolValue;
+}
+
+- (NSUInteger)yoki_supportedInterfaceOrientations
+{
+    NSNumber *value = objc_getAssociatedObject([UIApplication sharedApplication], kOrientationLockKey);
+    NSNumber *orientation = objc_getAssociatedObject([UIApplication sharedApplication], kOrienatationKey);
+    UIInterfaceOrientation io = orientation.integerValue;
+    if (!value || value.boolValue)
+        return UIInterfaceOrientationMaskAll;
+    else {
+        return io;
+    }
+}
+
+#pragma mark - Logic
 
 -(void)screenOrientation:(CDVInvokedUrlCommand *)command
 {
@@ -32,6 +114,7 @@ SOFTWARE.
 
     // grab the device orientation so we can pass it back to the js side.
     NSString *orientation;
+    UIInterfaceOrientation interfaceOrientation = [self interfaceOrientationForArguments:arguments];
     switch ([[UIDevice currentDevice] orientation]) {
         case UIDeviceOrientationLandscapeLeft:
             orientation = @"landscape-secondary";
@@ -48,6 +131,14 @@ SOFTWARE.
         default:
             orientation = @"portait";
             break;
+    }
+    
+    if (interfaceOrientation != UIInterfaceOrientationUnknown) {
+        NSNumber *value = [NSNumber numberWithInt:interfaceOrientation];
+        [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            objc_setAssociatedObject([UIApplication sharedApplication], kOrientationLockKey, @(NO), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        });
     }
 
     if ([orientationIn isEqual: @"unlocked"]) {
