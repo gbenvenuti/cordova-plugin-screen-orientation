@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 #import "YoikScreenOrientation.h"
+#import <objc/runtime.h>
 
 static char * const kOrientationLockKey = "orientationLock";
 static char * const kOrienatationKey = "orientation";
