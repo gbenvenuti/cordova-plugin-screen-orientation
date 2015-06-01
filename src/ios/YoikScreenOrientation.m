@@ -168,7 +168,7 @@ static char * const kOrienatationKey = "orientation";
     // This stops us getting the black application background flash, iOS8
     vc.modalPresentationStyle = UIModalPresentationOverFullScreen;
 #endif
-    [self.viewController presentViewController:vc animated:NO completion:nil];
+//    [self.viewController presentViewController:vc animated:NO completion:nil];
 }
 
 @end
