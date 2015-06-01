@@ -135,15 +135,16 @@ static char * const kOrienatationKey = "orientation";
     }
     
     if (interfaceOrientation != UIInterfaceOrientationUnknown) {
-        NSNumber *value = [NSNumber numberWithInt:interfaceOrientation];
+        NSNumber *value = [NSNumber numberWithInt:interfaceOrientation == UIInterfaceOrientationUnknown ? UIInterfaceOrientationPortrait : interfaceOrientation];
         [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            objc_setAssociatedObject([UIApplication sharedApplication], kOrientationLockKey, @(NO), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            objc_setAssociatedObject([UIApplication sharedApplication], kOrientationLockKey, @(interfaceOrientation == UIInterfaceOrientationUnknown ? YES : NO), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         });
     }
 
     if ([orientationIn isEqual: @"unlocked"]) {
         orientationIn = orientation;
+        [self setIsScreenUnlocked:YES];
     }
 
     // we send the result prior to the view controller presentation so that the JS side
