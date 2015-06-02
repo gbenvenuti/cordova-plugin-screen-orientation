@@ -55,7 +55,7 @@ static char * const kOrienatationKey = "orientation";
     if ([arguments[1] isEqualToString:@"unlocked"] || [arguments[1] isEqualToString:@"locked"])
         return UIInterfaceOrientationUnknown;
     
-    if ([arguments[1] isEqualToString:@"portait"] || [arguments[1] isEqualToString:@"portrait-primary"]) {
+    if ([arguments[1] isEqualToString:@"portrait"] || [arguments[1] isEqualToString:@"portrait-primary"]) {
         return UIInterfaceOrientationPortrait;
     }
     else if ([arguments[1] isEqualToString:@"portrait-secondary"]) {
