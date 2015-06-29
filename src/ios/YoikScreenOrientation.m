@@ -46,7 +46,7 @@ SOFTWARE.
             orientation = @"portrait-secondary";
             break;
         default:
-            orientation = @"portait";
+            orientation = @"portrait";
             break;
     }
 
