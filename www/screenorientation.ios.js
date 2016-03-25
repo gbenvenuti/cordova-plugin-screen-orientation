@@ -15,6 +15,7 @@ screenOrientation.setOrientation = function(orientation) {
     iosOrientation = orientation;
 
     var success = function(res) {
+        window.addEventListener("touchstart",function(){});
         if (orientation === 'unlocked' && res.device) {
             iosOrientation = res.device;
             setTimeout(function() {
