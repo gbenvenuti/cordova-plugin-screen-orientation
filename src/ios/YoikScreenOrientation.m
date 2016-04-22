@@ -21,7 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+
 #import "YoikScreenOrientation.h"
+#import "CDVViewController+UpdateSupportedOrientations.h"
 
 @implementation YoikScreenOrientation
 
@@ -63,9 +65,8 @@ SOFTWARE.
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 
         // SEE https://github.com/Adlotto/cordova-plugin-recheck-screen-orientation
-        // HACK: Force rotate by changing the view hierarchy. Present modal view then dismiss it immediately
-        // This has been changed substantially since iOS8 broke it...
-        ForcedViewController *vc = [[ForcedViewController alloc] init];
+        // HACK: Force rotate by changing the view hierarchy.
+		ForcedViewController *vc = [[ForcedViewController alloc] init];
         vc.calledWith = orientationIn;
 
         // backgound should be transparent as it is briefly visible
@@ -80,12 +81,7 @@ SOFTWARE.
 #endif
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.viewController presentViewController:vc animated:NO completion:^{
-                // added to support iOS8 beta 5, @see issue #19
-                dispatch_after(0, dispatch_get_main_queue(), ^{
-                    [self.viewController dismissViewControllerAnimated:NO completion:nil];
-                });
-            }];
+            [self.viewController presentViewController:vc animated:NO completion:nil];
         });
 
     }];
@@ -94,6 +90,20 @@ SOFTWARE.
 @end
 
 @implementation ForcedViewController
+
+-(void) viewDidAppear:(BOOL)animated {
+	CDVViewController *presenter = (CDVViewController*)self.presentingViewController;
+	
+	if ([self.calledWith rangeOfString:@"portrait"].location != NSNotFound) {
+		[presenter updateSupportedOrientations:@[[NSNumber numberWithInt:UIInterfaceOrientationPortrait]]];
+
+	} else if([self.calledWith rangeOfString:@"landscape"].location != NSNotFound) {
+		[presenter updateSupportedOrientations:@[[NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft], [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight]]];
+	} else {
+		[presenter updateSupportedOrientations:@[[NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft], [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight], [NSNumber numberWithInt:UIInterfaceOrientationPortrait]]];
+	}
+	[presenter dismissViewControllerAnimated:NO completion:nil];
+}
 
 - (UIInterfaceOrientationMask) supportedInterfaceOrientations
 {
