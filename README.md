@@ -17,10 +17,14 @@
 #         under the License.
 -->
 
-This repository is no longer maintained. 
+**This repository is no longer maintained.**
+
 This plugin has been adopted as an Apache Cordova Core Plugin.
+
 The new repository location is https://github.com/apache/cordova-plugin-screen-orientation.
 
-Open Issues and Pull Requests have been resolved and closed or [migrated to Apache JIRA|https://issues.apache.org/jira/issues/?jql=component%20%3D%20%22Plugin%20Screen%20Orientation%22%20AND%20project%20%3D%20CB].
+Open Issues and Pull Requests have been resolved and closed or [migrated to Apache JIRA](https://issues.apache.org/jira/issues/?jql=component%20%3D%20%22Plugin%20Screen%20Orientation%22%20AND%20project%20%3D%20CB).
+
 Please submit new Pull Requests to the Apache repo.
+
 Please log new issues in Apache JIRA.
