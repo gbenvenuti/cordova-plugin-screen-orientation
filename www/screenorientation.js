@@ -40,7 +40,9 @@ screenOrientation.currOrientation = 'unlocked';
 
 screenOrientation.setOrientation = function(orientation) {
     //platform specific files override this function
-    console.log('setOrientation not supported on device');
+    var fn = window.screen && window.screen.orientation && window.screen.orientation[orientation === 'unlocked' ? 'unlock' : 'lock'],
+        fs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullscreenElement || document.msFullscreenElement || document.oFullscreenElement;
+    return fs && fn && fn.call(window.screen.orientation, orientation) || console.log('setOrientation not supported on device');
 };
 
 function addScreenOrientationApi(screenObject) {
